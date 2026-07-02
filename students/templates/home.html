@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="text-center">
+
+    <h1 class="display-4">
+        Student Management System
+    </h1>
+
+    <p class="lead">
+        Manage student records efficiently using Django.
+    </p>
+
+</div>
+
+<div class="row mt-5">
+
+    <div class="col-md-4">
+
+        <div class="card shadow text-center">
+
+            <div class="card-body">
+
+                <h5>Total Students</h5>
+
+                <h1 class="text-primary">
+                    {{ total_students }}
+                </h1>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="mt-4">
+
+<a href="/students/" class="btn btn-primary">
+View Students
+</a>
+
+<a href="/add/" class="btn btn-success">
+Add Student
+</a>
+
+</div>
+
+{% endblock %}
