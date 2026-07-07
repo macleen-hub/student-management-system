@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 
+# Connects browser URLs to view functions.
 urlpatterns = [
     path("", views.home, name="home"),
     path("students/", views.student_list, name="student_list"),

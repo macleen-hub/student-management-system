@@ -6,8 +6,10 @@ from .models import Student
 from .views import student_list
 
 
+# Tests for the student search page.
 class StudentSearchTests(TestCase):
     def setUp(self):
+        # Create test user and sample students.
         self.user = User.objects.create_user(username="admin", password="password")
         self.factory = RequestFactory()
 
@@ -33,6 +35,7 @@ class StudentSearchTests(TestCase):
         )
 
     def get_student_list_response(self, query):
+        # Build a fake request for the student list view.
         url = reverse("student_list")
         request = self.factory.get(url, {"q": query})
         request.user = self.user
@@ -41,6 +44,7 @@ class StudentSearchTests(TestCase):
         return student_list(request)
 
     def test_search_matches_full_name_tokens(self):
+        # Full-name search should match only Ada.
         response = self.get_student_list_response("Ada Lovelace")
 
         self.assertContains(response, "Ada Lovelace")
@@ -48,12 +52,14 @@ class StudentSearchTests(TestCase):
         self.assertNotContains(response, "Grace Hopper")
 
     def test_search_matches_course(self):
+        # Course search should match Grace.
         response = self.get_student_list_response("Information")
 
         self.assertContains(response, "Grace Hopper")
         self.assertNotContains(response, "Ada Lovelace")
 
     def test_blank_search_returns_all_students(self):
+        # Empty search should show every student.
         response = self.get_student_list_response("   ")
 
         self.assertContains(response, "Ada Lovelace")

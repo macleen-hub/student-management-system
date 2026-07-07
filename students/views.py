@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def home(request):
+    # Build dashboard numbers from all student records.
     students = Student.objects.all()
     total_students = students.count()
 
@@ -26,10 +27,12 @@ def home(request):
 
 @login_required
 def student_list(request):
+    # Read and clean the search text from the URL.
     query = (request.GET.get("q") or "").strip()
     students = Student.objects.all().order_by("last_name", "first_name")
 
     if query:
+        # Match every word against common student fields.
         search_filter = Q()
 
         for token in query.split():
@@ -44,10 +47,12 @@ def student_list(request):
             )
 
             if token.isdigit():
+                # Numeric searches can also match academic year.
                 token_filter |= Q(year=int(token))
 
             search_filter &= token_filter
 
+        # Apply search and remove repeated results.
         students = students.filter(search_filter).distinct()
 
     return render(
@@ -64,6 +69,7 @@ def student_list(request):
 @login_required
 def add_student(request):
     if request.method == "POST":
+        # Save a new student after form validation.
         form = StudentForm(request.POST)
         if form.is_valid():
             form.save()
@@ -75,9 +81,11 @@ def add_student(request):
 
 @login_required
 def update_student(request, id):
+    # Find the student or show a 404 page.
     student = get_object_or_404(Student, id=id)
 
     if request.method == "POST":
+        # Update the existing student record.
         form = StudentForm(request.POST, instance=student)
         if form.is_valid():
             form.save()
@@ -89,24 +97,28 @@ def update_student(request, id):
 
 @login_required
 def delete_student(request, id):
+    # Delete the selected student.
     student = get_object_or_404(Student, id=id)
     student.delete()
     return redirect("student_list")
 
 @login_required
 def student_detail(request, id):
+    # Show one student's full details.
     student = get_object_or_404(Student, id=id)
     return render(request, "student_detail.html", {"student": student})
 
 
 def login_user(request):
     if request.method == "POST":
+        # Check submitted login details.
         username = request.POST.get("username")
         password = request.POST.get("password")
 
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
+            # Start a login session.
             login(request, user)
             return redirect("home")
         else:
@@ -118,5 +130,6 @@ def login_user(request):
 
 
 def logout_user(request):
+    # End the current login session.
     logout(request)
     return redirect("login")
