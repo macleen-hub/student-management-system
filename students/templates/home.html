@@ -1,51 +1,98 @@
 {% extends 'base.html' %}
 
+{% block page_title %}Dashboard{% endblock %}
+
 {% block content %}
+<section class="page-heading">
+    <div>
+        <h1>Student Overview</h1>
+        <p>Snapshot of records, courses, and recent activity.</p>
+    </div>
+    <div class="quick-actions">
+        <a href="{% url 'student_list' %}" class="btn btn-outline-primary">
+            <i class="bi bi-people"></i>
+            <span>View Students</span>
+        </a>
+        <a href="{% url 'add_student' %}" class="btn btn-primary">
+            <i class="bi bi-person-plus"></i>
+            <span>Add Student</span>
+        </a>
+    </div>
+</section>
 
-<div class="text-center">
+<section class="dashboard-stats" aria-label="Student statistics">
+    <article class="stat-card">
+        <span class="stat-icon"><i class="bi bi-people-fill"></i></span>
+        <div>
+            <p class="stat-label">Total Students</p>
+            <strong class="stat-value">{{ total_students }}</strong>
+        </div>
+    </article>
 
-    <h1 class="display-4">
-        Student Management System
-    </h1>
+    <article class="stat-card">
+        <span class="stat-icon success"><i class="bi bi-journal-bookmark-fill"></i></span>
+        <div>
+            <p class="stat-label">Courses</p>
+            <strong class="stat-value">{{ total_courses }}</strong>
+        </div>
+    </article>
 
-    <p class="lead">
-        Manage student records efficiently using Django.
-    </p>
+    <article class="stat-card">
+        <span class="stat-icon warning"><i class="bi bi-calendar3"></i></span>
+        <div>
+            <p class="stat-label">Academic Years</p>
+            <strong class="stat-value">{{ active_years }}</strong>
+        </div>
+    </article>
+</section>
 
-</div>
-
-<div class="row mt-5">
-
-    <div class="col-md-4">
-
-        <div class="card shadow text-center">
-
-            <div class="card-body">
-
-                <h5>Total Students</h5>
-
-                <h1 class="text-primary">
-                    {{ total_students }}
-                </h1>
-
-            </div>
-
+<section class="dashboard-panels">
+    <article class="panel">
+        <div class="panel-header">
+            <h2>Course Distribution</h2>
+            <a href="{% url 'student_list' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-right"></i>
+                <span>All Students</span>
+            </a>
         </div>
 
-    </div>
+        <div class="metric-list">
+            {% for item in course_distribution %}
+            <div class="metric-row">
+                <span>{{ item.course }}</span>
+                <strong>{{ item.total }}</strong>
+                <div class="metric-bar" aria-hidden="true">
+                    <span style="width: {% widthratio item.total total_students 100 %}%"></span>
+                </div>
+            </div>
+            {% empty %}
+            <p class="empty-state">No student records yet.</p>
+            {% endfor %}
+        </div>
+    </article>
 
-</div>
+    <article class="panel">
+        <div class="panel-header">
+            <h2>Recent Students</h2>
+            <a href="{% url 'add_student' %}" class="btn btn-primary btn-sm">
+                <i class="bi bi-person-plus"></i>
+                <span>Add</span>
+            </a>
+        </div>
 
-<div class="mt-4">
-
-<a href="/students/" class="btn btn-primary">
-View Students
-</a>
-
-<a href="/add/" class="btn btn-success">
-Add Student
-</a>
-
-</div>
-
+        <div class="student-stack">
+            {% for student in recent_students %}
+            <a href="{% url 'student_detail' student.id %}" class="student-row">
+                <span class="student-avatar">{{ student.first_name|slice:":1" }}{{ student.last_name|slice:":1" }}</span>
+                <span>
+                    <strong>{{ student.first_name }} {{ student.last_name }}</strong>
+                    <span>{{ student.registration_number }} &middot; {{ student.course }}</span>
+                </span>
+            </a>
+            {% empty %}
+            <p class="empty-state">No recent students to show.</p>
+            {% endfor %}
+        </div>
+    </article>
+</section>
 {% endblock %}

@@ -1,87 +1,122 @@
 {% extends 'base.html' %}
 
+{% block page_title %}Students{% endblock %}
+
 {% block content %}
+<section class="page-heading">
+    <div>
+        <h1>Student Directory</h1>
+        <p>
+            {% if query %}
+            Showing {{ filtered_count }} result{{ filtered_count|pluralize }} for "{{ query }}".
+            {% else %}
+            Showing {{ total_students }} student{{ total_students|pluralize }}.
+            {% endif %}
+        </p>
+    </div>
+    <div class="list-actions">
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="{% url 'add_student' %}" class="btn btn-primary">
+            <i class="bi bi-person-plus"></i>
+            <span>Add Student</span>
+        </a>
+    </div>
+</section>
 
-    <h2>Student List</h2>
-    <form method="GET" class="row mb-3">
-
-    <div class="col-md-10">
-        <input
-            type="text"
-            name="q"
-            class="form-control"
-            placeholder="Search by Registration Number, Name or Course"
-            value="{{ request.GET.q }}">
+<section class="table-panel">
+    <div class="table-toolbar">
+        <div>
+            <h2>Records</h2>
+            <p class="result-summary">
+                Search by registration number, name, course, email, phone, gender, or year.
+            </p>
+        </div>
     </div>
 
-    <div class="col-md-2">
-        <button class="btn btn-primary w-100">
-            Search
+    <form method="get" class="list-search" role="search">
+        <div class="search-input-wrap">
+            <i class="bi bi-search"></i>
+            <input
+                type="search"
+                name="q"
+                class="form-control"
+                placeholder="Type a student name, reg no, course, or year"
+                value="{{ query }}"
+                aria-label="Search students">
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-search"></i>
+            <span>Search</span>
         </button>
-    </div>
-
+        {% if query %}
+        <a href="{% url 'student_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-x-circle"></i>
+            <span>Clear</span>
+        </a>
+        {% endif %}
     </form>
-    <a href="/" class="btn btn-secondary mb-3">
-    Home
-    </a>
 
-    <a href="/add/" class="btn btn-success mb-3">
-        Add Student
-    </a>
-
-    <table class="table table-bordered table-striped">
-
-        <thead class="table-dark">
-
-            <tr>
-
-                <th>Reg No</th>
-                <th>Name</th>
-                <th>Course</th>
-                <th>Year</th>
-                <th>Actions</th>
-
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-        {% for student in students %}
-
-        <tr>
-
-            <td>{{ student.registration_number }}</td>
-
-            <td>{{ student.first_name }} {{ student.last_name }}</td>
-
-            <td>{{ student.course }}</td>
-
-            <td>{{ student.year }}</td>
-
-            <td>
-                <a href="/student/{{ student.id }}/" class="btn btn-info btn-sm">
-                  View
-                </a>
-                <a href="/update/{{ student.id }}/"
-                   class="btn btn-warning btn-sm">
-                   Edit
-                </a>
-
-               <a href="/delete/{{ student.id }}/"
-   class="btn btn-danger btn-sm"
-   onclick="return confirm('Are you sure you want to delete this student?');">
-    Delete
-</a>
-
-            </td>
-
-        </tr>
-
-        {% endfor %}
-
-        </tbody>
-
-    </table>
-
+    {% if students %}
+    <div class="table-responsive">
+        <table class="table student-table align-middle">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Registration</th>
+                    <th>Course</th>
+                    <th>Year</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for student in students %}
+                <tr>
+                    <td>
+                        <div class="student-name">
+                            <span class="student-avatar">{{ student.first_name|slice:":1" }}{{ student.last_name|slice:":1" }}</span>
+                            <span>
+                                <strong>{{ student.first_name }} {{ student.last_name }}</strong>
+                                <small>{{ student.email }}</small>
+                            </span>
+                        </div>
+                    </td>
+                    <td>{{ student.registration_number }}</td>
+                    <td>{{ student.course }}</td>
+                    <td><span class="badge-year">Year {{ student.year }}</span></td>
+                    <td>
+                        <div class="row-actions">
+                            <a href="{% url 'student_detail' student.id %}" class="btn btn-outline-info btn-icon" title="View {{ student.first_name }}" aria-label="View {{ student.first_name }}">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{% url 'update_student' student.id %}" class="btn btn-outline-warning btn-icon" title="Edit {{ student.first_name }}" aria-label="Edit {{ student.first_name }}">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a
+                                href="{% url 'delete_student' student.id %}"
+                                class="btn btn-outline-danger btn-icon"
+                                title="Delete {{ student.first_name }}"
+                                aria-label="Delete {{ student.first_name }}"
+                                onclick="return confirm('Are you sure you want to delete this student?');">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">
+        {% if query %}
+        No students match "{{ query }}".
+        {% else %}
+        No student records yet.
+        {% endif %}
+    </p>
+    {% endif %}
+</section>
 {% endblock %}

@@ -1,19 +1,54 @@
 {% extends 'base.html' %}
 
+{% block page_title %}
+{% if form.instance.pk %}Edit Student{% else %}Add Student{% endif %}
+{% endblock %}
+
 {% block content %}
+<section class="page-heading">
+    <div>
+        <h1>{% if form.instance.pk %}Edit Student{% else %}Add Student{% endif %}</h1>
+        <p>{% if form.instance.pk %}Update registration and contact details.{% else %}Create a new student record.{% endif %}</p>
+    </div>
+    <a href="{% url 'student_list' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i>
+        <span>Back to Students</span>
+    </a>
+</section>
 
-<h2>Add Student</h2>
+<section class="form-panel">
+    <form method="post" class="student-form" novalidate>
+        {% csrf_token %}
 
-<form method="POST">
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
 
-{% csrf_token %}
+        <div class="form-grid">
+            {% for field in form %}
+            <div class="field-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+                {{ field.errors }}
+            </div>
+            {% endfor %}
+        </div>
 
-{{ form.as_p }}
-
-<button class="btn btn-primary">
-Save Student
-</button>
-
-</form>
-
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check2-circle"></i>
+                <span>{% if form.instance.pk %}Save Changes{% else %}Save Student{% endif %}</span>
+            </button>
+            <a href="{% url 'student_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-x-circle"></i>
+                <span>Cancel</span>
+            </a>
+        </div>
+    </form>
+</section>
 {% endblock %}
