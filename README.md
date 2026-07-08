@@ -1,15 +1,15 @@
 # Student Management System
 
-A Django-based student management system for keeping student records, viewing a dashboard summary, searching students, and managing student details.
+A Django-based student management system for keeping student records, viewing a dashboard summary, and managing student details.
 
 ## Features
 
 - User login and logout
 - Dashboard with student totals, course counts, academic years, recent students, and course distribution
-- Student directory with search
+- Student directory
 - Add, edit, view, and delete student records
 - Django admin support for managing students
-- Tests for student search behavior
+- Tests for student directory behavior
 
 ## Tech Stack
 
@@ -84,19 +84,6 @@ Open Django admin:
 ```text
 http://127.0.0.1:8000/admin/
 ```
-
-## Search
-
-The student search can match:
-
-- Registration number
-- First name
-- Last name
-- Course
-- Email
-- Phone
-- Gender
-- Academic year
 
 ## Notes
 

@@ -6,13 +6,7 @@
 <section class="page-heading">
     <div>
         <h1>Student Directory</h1>
-        <p>
-            {% if query %}
-            Showing {{ filtered_count }} result{{ filtered_count|pluralize }} for "{{ query }}".
-            {% else %}
-            Showing {{ total_students }} student{{ total_students|pluralize }}.
-            {% endif %}
-        </p>
+        <p>Showing {{ total_students }} student{{ total_students|pluralize }}.</p>
     </div>
     <div class="list-actions">
         <a href="{% url 'home' %}" class="btn btn-outline-secondary">
@@ -30,34 +24,9 @@
     <div class="table-toolbar">
         <div>
             <h2>Records</h2>
-            <p class="result-summary">
-                Search by registration number, name, course, email, phone, gender, or year.
-            </p>
+            <p class="result-summary">All student records are listed below.</p>
         </div>
     </div>
-
-    <form method="get" class="list-search" role="search">
-        <div class="search-input-wrap">
-            <i class="bi bi-search"></i>
-            <input
-                type="search"
-                name="q"
-                class="form-control"
-                placeholder="Type a student name, reg no, course, or year"
-                value="{{ query }}"
-                aria-label="Search students">
-        </div>
-        <button type="submit" class="btn btn-primary">
-            <i class="bi bi-search"></i>
-            <span>Search</span>
-        </button>
-        {% if query %}
-        <a href="{% url 'student_list' %}" class="btn btn-outline-secondary">
-            <i class="bi bi-x-circle"></i>
-            <span>Clear</span>
-        </a>
-        {% endif %}
-    </form>
 
     {% if students %}
     <div class="table-responsive">
@@ -110,13 +79,7 @@
         </table>
     </div>
     {% else %}
-    <p class="empty-state">
-        {% if query %}
-        No students match "{{ query }}".
-        {% else %}
-        No student records yet.
-        {% endif %}
-    </p>
+    <p class="empty-state">No student records yet.</p>
     {% endif %}
 </section>
 {% endblock %}

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from django.db.models import Count, Q
+from django.db.models import Count
 from .models import Student
 from .forms import StudentForm
 from django.contrib.auth.decorators import login_required
@@ -27,42 +27,15 @@ def home(request):
 
 @login_required
 def student_list(request):
-    # Read and clean the search text from the URL.
-    query = (request.GET.get("q") or "").strip()
+    # Show all students in alphabetical order.
     students = Student.objects.all().order_by("last_name", "first_name")
-
-    if query:
-        # Match every word against common student fields.
-        search_filter = Q()
-
-        for token in query.split():
-            token_filter = (
-                Q(registration_number__icontains=token)
-                | Q(first_name__icontains=token)
-                | Q(last_name__icontains=token)
-                | Q(course__icontains=token)
-                | Q(email__icontains=token)
-                | Q(phone__icontains=token)
-                | Q(gender__icontains=token)
-            )
-
-            if token.isdigit():
-                # Numeric searches can also match academic year.
-                token_filter |= Q(year=int(token))
-
-            search_filter &= token_filter
-
-        # Apply search and remove repeated results.
-        students = students.filter(search_filter).distinct()
 
     return render(
         request,
         "student_list.html",
         {
             "students": students,
-            "query": query,
-            "filtered_count": students.count(),
-            "total_students": Student.objects.count(),
+            "total_students": students.count(),
         },
     )
 
